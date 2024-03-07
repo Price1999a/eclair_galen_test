@@ -1,0 +1,17 @@
+存在潜在的重复定义问题
+现在的处理方案是将重复的定义后面直接加上_1 这大概率是不对的 但是一共只有如下几处需要尝试 可以嗯试
+call ccc void @eclair_btree_insert_range_delta_p_p 5306 5312
+call ccc void @eclair_btree_insert_range_delta_q_q 5318 5324
+call ccc void @eclair_btree_insert_range_p_new_p   6572 6578
+call ccc void @eclair_btree_insert_range_q_new_q   6590 6596
+
+
+参考output 计数
+ wc -l ./output/*
+    1000 ./output/c.csv
+    1147 ./output/p.csv
+    7865 ./output/q.csv
+     385 ./output/r.csv
+    1000 ./output/s.csv
+    1000 ./output/u.csv
+   12397 total
