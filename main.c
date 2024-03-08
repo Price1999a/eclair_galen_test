@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <dirent.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_FILENAME 256
@@ -10,7 +10,8 @@
 #ifdef DOCKER_ENV
 #define READ_DIR "/app/data"
 #else
-#define READ_DIR "/Users/shentianqi/Downloads/ddlogfile/basedonPaper/soufflé/galen/input/"
+#define READ_DIR                                                               \
+  "/Users/shentianqi/Downloads/ddlogfile/basedonPaper/soufflé/galen/input/"
 #endif
 // The Eclair runtime is represented by an opaque pointer
 // to a program struct.
@@ -23,41 +24,22 @@ extern void eclair_program_destroy(struct program *);
 
 extern void eclair_program_run(struct program *);
 
-extern void eclair_add_facts(
-        struct program *,
-        uint32_t fact_type,
-        uint32_t *data,
-        size_t fact_count
-);
+extern void eclair_add_facts(struct program *, uint32_t fact_type,
+                             uint32_t *data, size_t fact_count);
 
-extern void eclair_add_fact(
-        struct program *,
-        uint32_t fact_type,
-        uint32_t *data
-);
+extern void eclair_add_fact(struct program *, uint32_t fact_type,
+                            uint32_t *data);
 
-extern uint32_t *eclair_get_facts(
-        struct program *,
-        uint32_t fact_type
-);
+extern uint32_t *eclair_get_facts(struct program *, uint32_t fact_type);
 
-extern uint32_t eclair_fact_count(
-        struct program *,
-        uint32_t fact_type
-);
+extern uint32_t eclair_fact_count(struct program *, uint32_t fact_type);
 
 extern void eclair_free_buffer(uint32_t *data);
 
-extern uint32_t eclair_encode_string(
-        struct program *,
-        uint32_t length,
-        const char *str
-);
+extern uint32_t eclair_encode_string(struct program *, uint32_t length,
+                                     const char *str);
 
-extern struct symbol *eclair_decode_string(
-        struct program *,
-        uint32_t index
-);
+extern struct symbol *eclair_decode_string(struct program *, uint32_t index);
 
 // 以上是eclair相关内容
 
@@ -70,7 +52,8 @@ typedef struct {
 
 void expand_array(FileData *file_data) {
     file_data->capacity *= 2;
-    file_data->numbers = realloc(file_data->numbers, sizeof(uint32_t) * file_data->capacity);
+    file_data->numbers =
+            realloc(file_data->numbers, sizeof(uint32_t) * file_data->capacity);
     if (file_data->numbers == NULL) {
         perror("Error reallocating memory");
         exit(EXIT_FAILURE);
@@ -97,9 +80,10 @@ FileData *read_directory(const char *directory_path, int *num_files) {
 
     struct dirent *entry;
     while ((entry = readdir(directory)) != NULL) {
-        if (entry->d_type == DT_REG) {  // 检查是否为常规文件
+        if (entry->d_type == DT_REG) { // 检查是否为常规文件
             char file_path[MAX_FILENAME];
-            snprintf(file_path, sizeof(file_path), "%s/%s", directory_path, entry->d_name);
+            snprintf(file_path, sizeof(file_path), "%s/%s", directory_path,
+                     entry->d_name);
 
             FILE *file = fopen(file_path, "r");
             if (file == NULL) {
@@ -109,7 +93,8 @@ FileData *read_directory(const char *directory_path, int *num_files) {
 
             if (file_index >= array_capacity) {
                 array_capacity *= 2;
-                file_data_array = realloc(file_data_array, sizeof(FileData) * array_capacity);
+                file_data_array =
+                        realloc(file_data_array, sizeof(FileData) * array_capacity);
                 if (file_data_array == NULL) {
                     perror("Error reallocating memory");
                     fclose(file);
@@ -118,10 +103,12 @@ FileData *read_directory(const char *directory_path, int *num_files) {
                 }
             }
 
-            strncpy(file_data_array[file_index].filename, entry->d_name, MAX_FILENAME);
+            strncpy(file_data_array[file_index].filename, entry->d_name,
+                    MAX_FILENAME);
             file_data_array[file_index].count = 0;
             file_data_array[file_index].capacity = INITIAL_CAPACITY;
-            file_data_array[file_index].numbers = malloc(sizeof(uint32_t) * INITIAL_CAPACITY);
+            file_data_array[file_index].numbers =
+                    malloc(sizeof(uint32_t) * INITIAL_CAPACITY);
             if (file_data_array[file_index].numbers == NULL) {
                 perror("Error allocating memory");
                 fclose(file);
@@ -133,10 +120,13 @@ FileData *read_directory(const char *directory_path, int *num_files) {
             while (fgets(line, sizeof(line), file) != NULL) {
                 char *token = strtok(line, ",");
                 while (token != NULL) {
-                    if (file_data_array[file_index].count >= file_data_array[file_index].capacity) {
+                    if (file_data_array[file_index].count >=
+                        file_data_array[file_index].capacity) {
                         expand_array(&file_data_array[file_index]);
                     }
-                    file_data_array[file_index].numbers[file_data_array[file_index].count] = (uint32_t) atoi(token);
+                    file_data_array[file_index]
+                            .numbers[file_data_array[file_index].count] =
+                            (uint32_t) atoi(token);
                     file_data_array[file_index].count++;
                     token = strtok(NULL, ",");
                 }
@@ -159,54 +149,88 @@ void free_file_data_array(FileData *file_data_array, int num_files) {
     free(file_data_array);
 }
 
-void printInputFileInfo(FileData *p, FileData *q, FileData *r, FileData *c, FileData *u, FileData *s) {
-    printf("p size = %d \n",p->count/2);
-    printf("q size = %d \n",q->count/3);
-    printf("r size = %d \n",r->count/3);
-    printf("c size = %d \n",c->count/3);
-    printf("u size = %d \n",u->count/3);
-    printf("s size = %d \n",s->count/2);
+void printInputFileInfo(const FileData *p, const FileData *q, const FileData *r,
+                        const FileData *c, const FileData *u,
+                        const FileData *s) {
+    printf("p size = %d \n", p->count / 2);
+    printf("q size = %d \n", q->count / 3);
+    printf("r size = %d \n", r->count / 3);
+    printf("c size = %d \n", c->count / 3);
+    printf("u size = %d \n", u->count / 3);
+    printf("s size = %d \n", s->count / 2);
 }
 
-int run() {
+void associate_file_data_with_input_pointers(
+        int num_files, const FileData *file_data_array, const FileData **p_input,
+        const FileData **q_input, const FileData **r_input,
+        const FileData **c_input, const FileData **u_input,
+        const FileData **s_input) {
+    for (int i = 0; i < num_files; i++) {
+        switch (file_data_array[i].filename[0]) {
+            case 'p':
+                (*p_input) = &file_data_array[i];
+                break;
+            case 'q':
+                (*q_input) = &file_data_array[i];
+                break;
+            case 'r':
+                (*r_input) = &file_data_array[i];
+                break;
+            case 'c':
+                (*c_input) = &file_data_array[i];
+                break;
+            case 'u':
+                (*u_input) = &file_data_array[i];
+                break;
+            case 's':
+                (*s_input) = &file_data_array[i];
+                break;
+            default:
+                continue;
+        }
+    }
+}
+
+int run(struct program *prog) {
+    uint32_t p_fact_type = eclair_encode_string(prog, 1, "p");
+    uint32_t q_fact_type = eclair_encode_string(prog, 1, "q");
+    uint32_t r_fact_type = eclair_encode_string(prog, 1, "r");
+    uint32_t c_fact_type = eclair_encode_string(prog, 1, "c");
+    uint32_t u_fact_type = eclair_encode_string(prog, 1, "u");
+    uint32_t s_fact_type = eclair_encode_string(prog, 1, "s");
+    const FileData *p_input, *q_input, *r_input, *c_input, *u_input, *s_input;
+
     const char *directory_path = READ_DIR;
     int num_files;
     FileData *file_data_array = read_directory(directory_path, &num_files);
     if (file_data_array == NULL) {
         return EXIT_FAILURE;
     }
-    FileData *p_input, *q_input, *r_input, *c_input, *u_input, *s_input;
-    for (int i = 0; i < num_files; i++) {
-        switch (file_data_array[i].filename[0]) {
-            case 'p':
-                p_input = &file_data_array[i];
-                break;
-            case 'q':
-                q_input = &file_data_array[i];
-                break;
-            case 'r':
-                r_input = &file_data_array[i];
-                break;
-            case 'c':
-                c_input = &file_data_array[i];
-                break;
-            case 'u':
-                u_input = &file_data_array[i];
-                break;
-            case 's':
-                s_input = &file_data_array[i];
-                break;
-            default:
-                continue;
-        }
-    }
+    associate_file_data_with_input_pointers(num_files, file_data_array, &p_input,
+                                            &q_input, &r_input, &c_input,
+                                            &u_input, &s_input);
     printInputFileInfo(p_input, q_input, r_input, c_input, u_input, s_input);
 
+    eclair_add_facts(prog, r_fact_type, r_input->numbers, r_input->count / 3);
+    eclair_add_facts(prog, c_fact_type, c_input->numbers, c_input->count / 3);
+    eclair_add_facts(prog, u_fact_type, u_input->numbers, u_input->count / 3);
+    eclair_add_facts(prog, s_fact_type, s_input->numbers, s_input->count / 2);
+    printf("r c u s add_facts done");
+    eclair_add_facts(prog, p_fact_type, p_input->numbers, p_input->count / 2);
+    eclair_add_facts(prog, q_fact_type, q_input->numbers, q_input->count / 3);
+    printf("add_facts done.");
+    // Calculating results with Eclair:
+    eclair_program_run(prog);
+
+    uint32_t p_out_count = eclair_fact_count(prog, p_fact_type);
+    uint32_t q_out_count = eclair_fact_count(prog, q_fact_type);
+    printf("p_out_count: %u\n", p_out_count);
+    printf("q_out_count: %u\n", q_out_count);
+    eclair_program_destroy(prog);
 
     free_file_data_array(file_data_array, num_files);
     return EXIT_SUCCESS;
 }
-
 
 int main() {
     struct program *prog = eclair_program_init();
@@ -225,5 +249,5 @@ int main() {
     printf("s_fact_type %u\n", s_fact_type);
     printf(READ_DIR);
     printf("\n");
-    return run();
+    return run(prog);
 }

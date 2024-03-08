@@ -1,11 +1,14 @@
 存在潜在的重复定义问题
 现在的处理方案是将重复的定义后面直接加上_1 这大概率是不对的 但是一共只有如下几处需要尝试 可以嗯试
-call ccc void @eclair_btree_insert_range_delta_p_p 5306 5312
-call ccc void @eclair_btree_insert_range_delta_q_q 5318 5324
-call ccc void @eclair_btree_insert_range_p_new_p   6572 6578
-call ccc void @eclair_btree_insert_range_q_new_q   6590 6596
+call ccc void @eclair_btree_insert_range_delta_p_p 5016 _  5032 _1
+call ccc void @eclair_btree_insert_range_delta_q_q 5048 _  5064 _1
+call ccc void @eclair_btree_insert_range_p_new_p   5080 _  5096 _1
+call ccc void @eclair_btree_insert_range_q_new_q   5112 _  5128 _1
 
-
+00 00 00 00 无法终止 问题在于实际上甚至不能做到正确插入程序
+01 01 01 01 同样无法终止
+01 01 01 11 无法终止
+01 01 11 11 。。 这要搞到什么时候？我们会使用程序进行遍历看看能不能找到问题
 参考output 计数
  wc -l ./output/*
     1000 ./output/c.csv

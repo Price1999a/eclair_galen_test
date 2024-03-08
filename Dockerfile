@@ -7,7 +7,8 @@ VOLUME /app/data
 
 # 将主机上的源文件复制到镜像中
 COPY main.c .
-COPY query-eclair.ll .
+ARG QUERY_FILE
+COPY $QUERY_FILE query-eclair.ll
 
 # 编译程序
 RUN clang -DDOCKER_ENV -o program main.c query-eclair.ll
